@@ -1,9 +1,12 @@
-import React, { useState } from "react";
-import Modal from "./Modal";
+import React, { useState } from 'react';
+import Modal from './Modal';
+import { useAppDispatch } from '../redux/hooks';
+import { addToCart } from '../redux/features/cartSlice';
 
 const ProductCart = ({ product }: { product: any }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const dispatch = useAppDispatch();
 
   const handleShowModal = (product: any) => {
     setSelectedProduct(product);
@@ -15,8 +18,12 @@ const ProductCart = ({ product }: { product: any }) => {
     setShowModal(false);
   };
 
+  const handleAddToCart = (product) => {
+    dispatch(addToCart(product));
+  };
+
   return (
-    <div className="relative">
+    <div className='relative'>
       {showModal && (
         <Modal
           product={selectedProduct}
@@ -27,24 +34,25 @@ const ProductCart = ({ product }: { product: any }) => {
 
       <div
         onClick={() => handleShowModal(product)}
-        className="border rounded-lg shadow-lg overflow-hidden bg-white transition-transform transform hover:scale-105 hover:shadow-2xl flex flex-col h-full"
+        className='border rounded-lg shadow-lg overflow-hidden bg-white transition-transform transform hover:scale-105 hover:shadow-2xl flex flex-col h-full'
       >
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-48 object-cover transition-opacity duration-300 hover:opacity-75"
+          className='w-full h-48 object-cover transition-opacity duration-300 hover:opacity-75'
         />
-        <div className="p-4 flex flex-col flex-grow">
-          <h3 className="text-xl font-semibold text-green-700 mb-2">
+        <div className='p-4 flex flex-col flex-grow'>
+          <h3 className='text-xl font-semibold text-green-700 mb-2'>
             {product.name}
           </h3>
-          <p className="text-gray-700 mb-4 flex-grow">{product.description}</p>
-          <p className="text-lg font-bold text-red-600 mb-4">{product.price}</p>
+          <p className='text-gray-700 mb-4 flex-grow'>{product.description}</p>
+          <p className='text-lg font-bold text-red-600 mb-4'>{product.price}</p>
           <button
             onClick={(e) => {
               e.stopPropagation();
+              handleAddToCart(product);
             }}
-            className="bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800 transition duration-300 shadow-md hover:shadow-lg"
+            className='bg-green-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-800 transition duration-300 shadow-md hover:shadow-lg'
           >
             Add to Cart
           </button>
