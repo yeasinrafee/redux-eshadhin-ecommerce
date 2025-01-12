@@ -1,14 +1,34 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useLoginMutation } from '../redux/api/auth/authApi';
+import { setName, setPassword } from '../redux/features/loginSlice';
+import { setToken } from '../redux/features/userSlice';
+import { jwtDecode } from 'jwt-decode';
 
 const Login: React.FC = () => {
+  const { name, password } = useAppSelector((state) => state.login);
+  const dispatch = useAppDispatch();
+  const [login, { data }] = useLoginMutation();
+
+  // const { token } = useAppSelector((state) => state.user);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { data } = await login({ username: name, password });
+    const { token } = data?.data;
+    const user = jwtDecode(token);
+    dispatch(setToken(token));
+    console.log(user);
+  };
+
   return (
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-r from-green-800 via-red-700 to-green-600'>
       <div className='w-full max-w-md bg-white shadow-md rounded-lg p-8'>
         <h2 className='text-2xl font-semibold text-center text-red-700'>
           Login
         </h2>
-        <form className='mt-8 space-y-6'>
+        <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor='name'
@@ -19,6 +39,8 @@ const Login: React.FC = () => {
             <input
               type='text'
               id='name'
+              value={name}
+              onChange={(e) => dispatch(setName(e.target.value))}
               required
               className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-700 focus:border-green-700 sm:text-sm'
             />
@@ -33,6 +55,8 @@ const Login: React.FC = () => {
             <input
               type='password'
               id='password'
+              value={password}
+              onChange={(e) => dispatch(setPassword(e.target.value))}
               required
               className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-700 focus:border-green-700 sm:text-sm'
             />

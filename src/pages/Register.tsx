@@ -1,14 +1,37 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { RootState } from '../redux/store';
+import {
+  setEmail,
+  setName,
+  setPassword,
+  setRole,
+} from '../redux/features/RegisterSlice';
+import { useSignUpMutation } from '../redux/api/auth/authApi';
 
 const Register: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { name, email, password, role } = useAppSelector(
+    (state: RootState) => state.register
+  );
+
+  const [signUp] = useSignUpMutation();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const user = await signUp({ username: name, email, password, role });
+    console.log(user);
+    console.log({ name, email, password, role });
+  };
+
   return (
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-r from-green-800 via-red-700 to-green-600'>
       <div className='w-full max-w-md bg-white shadow-md rounded-lg p-8'>
         <h2 className='text-2xl font-semibold text-center text-red-700'>
           Register
         </h2>
-        <form className='mt-8 space-y-6'>
+        <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor='name'
@@ -19,6 +42,8 @@ const Register: React.FC = () => {
             <input
               type='text'
               id='name'
+              value={name}
+              onChange={(e) => dispatch(setName(e.target.value))}
               required
               className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-700 focus:border-green-700 sm:text-sm'
             />
@@ -33,6 +58,8 @@ const Register: React.FC = () => {
             <input
               type='email'
               id='email'
+              value={email}
+              onChange={(e) => dispatch(setEmail(e.target.value))}
               required
               className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-700 focus:border-green-700 sm:text-sm'
             />
@@ -47,6 +74,8 @@ const Register: React.FC = () => {
             <input
               type='text'
               id='role'
+              value={role}
+              onChange={(e) => dispatch(setRole(e.target.value))}
               className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-700 focus:border-green-700 sm:text-sm'
             />
           </div>
@@ -60,6 +89,8 @@ const Register: React.FC = () => {
             <input
               type='password'
               id='password'
+              value={password}
+              onChange={(e) => dispatch(setPassword(e.target.value))}
               required
               className='mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-700 focus:border-green-700 sm:text-sm'
             />
